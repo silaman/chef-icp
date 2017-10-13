@@ -14,12 +14,12 @@ verifier:
 
 platforms:
   - name: ubuntu-16.04
-  - name: centos-7
 
 suites:
   - name: default
     run_list:
       - recipe[icp::default]
+      - recipe[icp::00_master_node]
     verifier:
       inspec_tests:
         - test/smoke/default
