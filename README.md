@@ -4,14 +4,6 @@
 
 Cookbook Notes
 ==============
-knife bootstrap 192.168.56.30 -x labrat [-P password] -N icp-mbp --sudo -- ssh-gateway 192.168.56.30
-  Prompts for ssh login password and then for the sudo password. Should we have NOPASSWD sudo for "labrat" in nodes?
-
-knife node run_list add icp-mbp 'icp'
-
-knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute ipaddress
-
-knife ssh 'name:icp-mbp' 'hostname' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute ipaddress
 
 Configured three VMs with hostname and static IP addresses. See template etc_hosts for details.
 
@@ -23,7 +15,8 @@ Chef makes node's NAT as the default "ipaddress". The custom attribute "chef_ip"
 
 Add run list to node
 --------------------
-`knife node run_list set icp-mbp 'recipe[icp],recipe[icp::etc_hosts]'`
-`knife node run_list add icp-mbp 'icp::etc_hosts'`
+`knife node run_list set icp-mbp 'recipe[icp::default],recipe[icp::00_master_node]'`
+
+`knife node run_list set icp-work1 'recipe[icp::default],recipe[icp::10_work_proxy_node]'`
 
 `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`

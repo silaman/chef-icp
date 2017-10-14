@@ -15,11 +15,10 @@ end
   end
 end
 
-# Install NTP & Set clocks to UTC
-#     timedatectl set-timezone UTC
+# Set clocks to UTC
 bash 'set_tz_2_utc' do
   code <<-EOH
-    timedatectl set-timezone America/Los_Angeles
+    timedatectl set-timezone UTC
   EOH
 end
 
