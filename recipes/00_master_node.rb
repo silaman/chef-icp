@@ -9,17 +9,15 @@
 
 # Set vm.max_map_count=262144 on master node
 # "-w" should update /etc/sysctl.conf
-bash 'sysctl' do
-  code <<-EOH
-    sudo sysctl -w vm.max_map_count=262144
-  EOH
-end
+node.default['sysctl']['params']['vm']['max_map_count'] = 262144
+include_recipe 'sysctl::apply'
 
 # Create ssh key in boot (usually master & boot are the same node)
 # Create /root/.ssh folder and append the pub key to root's authorized_keys
 
 bash 'ssh_keygen' do
   code <<-EOH
+    whoami
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
     sudo mkdir /root/.ssh
     sudo cat ~/.ssh/master.id_rsa.pub >> /root/.ssh/authorized_keys
