@@ -8,18 +8,22 @@
 # boot functions on the same node. Some commands should run as "sudo", others should not.
 
 # Set vm.max_map_count=262144 on master node
-# "-w" should update /etc/sysctl.conf
 node.default['sysctl']['params']['vm']['max_map_count'] = 262144
 include_recipe 'sysctl::apply'
 
-# Create ssh key in boot (usually master & boot are the same node)
-# Create /root/.ssh folder and append the pub key to root's authorized_keys
+# Create ssh key in boot (usually master & boot are the same node) and append
+# the pub key to root's authorized_keys
+# Create .ssh folder for non-root & root accounts
+directory '~/.ssh' do
+  action :create
+end
+directory '/root/.ssh' do
+  action :create
+end
 
 bash 'ssh_keygen' do
   code <<-EOH
-    whoami
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
-    sudo mkdir /root/.ssh
     sudo cat ~/.ssh/master.id_rsa.pub >> /root/.ssh/authorized_keys
     EOH
   not_if { ::File.exist?(::File.expand_path("~/.ssh/master.id_rsa")) }
