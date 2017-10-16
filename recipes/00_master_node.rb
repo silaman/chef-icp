@@ -14,7 +14,7 @@ include_recipe 'sysctl::apply'
 # Create ssh key in boot (usually master & boot are the same node) and append
 # the pub key to root's authorized_keys
 # Create .ssh folder for non-root & root accounts
-directory '~/.ssh' do
+directory "#{ENV['HOME']}/.ssh" do
   action :create
 end
 directory '/root/.ssh' do
@@ -24,7 +24,7 @@ end
 bash 'ssh_keygen' do
   code <<-EOH
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
-    sudo cat ~/.ssh/master.id_rsa.pub >> /root/.ssh/authorized_keys
+    cat ~/.ssh/master.id_rsa.pub | sudo tee -a /root/.ssh/authorized_keys
     EOH
   not_if { ::File.exist?(::File.expand_path("~/.ssh/master.id_rsa")) }
 end
