@@ -34,41 +34,26 @@ ruby_block 'ssh_store_key' do
       end
     end
 
-    master_pub_key = ""
-    loop_max_tries = 100
-    attempts = 1
     # Get the ICP cluster's master_pub_key from the master_node. Place it in
     # the current (worker or proxy) node's master_pub_key attribute, in
     # /root/.ssh/authorized_keys and current user's ~/.ssh/authorized_keys
-    while attempts <= loop_max_tries
-      Chef::Log.info("attempts: #{attempts} - loop_max_tries: #{loop_max_tries}")
-      search(:node, 'icp_node_type:"master_node"') do |n|
-        master_pub_key = n['ibm']['icp_master_pub_key']
-      end
-
-      if !master_pub_key.to_s.empty?
-        Chef::Log.info("-- master_pub_key #{master_pub_key}")
-        break
-      end
-
-      sleep 10
-      attempts += 1
+    master_pub_key = ""
+    search(:node, 'icp_node_type:master_node') do |n|
+      master_pub_key = n['ibm']['icp_master_pub_key']
     end
 
-    if master_pub_key.to_s.empty?
+    if !master_pub_key.to_s.empty?
+      Chef::Log.info("-- master_pub_key: #{master_pub_key}")
+      add_key_to_authorized_keys(master_pub_key)
+      node.normal['ibm']['icp_master_pub_key'] = master_pub_key
+      icp_node_type = "worker_node"
+      node.normal['ibm']['icp_node_type'] = icp_node_type
+      Chef::Log.info("icp_node_type: #{'icp_node_type'}")
+      Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
+      node.save
+    else
       raise "EXITING: Cannot determine master_pub_key"
     end
-
-    sleep 20
-
-    add_key_to_authorized_keys(master_pub_key)
-    node.normal['ibm']['icp_master_pub_key'] = master_pub_key
-    icp_node_type = "worker_node"
-    node.normal['ibm']['icp_node_type'] = icp_node_type
-    Chef::Log.info("icp_node_type: #{'icp_node_type'}")
-    Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
-
-    node.save
   end
 end
 

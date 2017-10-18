@@ -1,11 +1,10 @@
 #
 # Cookbook:: icp
-# Recipe:: os_parms_master
+# Recipe:: 00_master_node
 # For master node only
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# This recipe is only master+boot node. This cluster model puts both master &
-# boot functions on the same node. Some commands should run as "sudo", others should not.
+# This recipe is for the master+boot node. 
 
 # Set vm.max_map_count=262144 on master node
 node.default['sysctl']['params']['vm']['max_map_count'] = 262144

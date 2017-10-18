@@ -1,6 +1,9 @@
 # icp
 
 # @todo Enter the cookbook description here.
+This cookbook will not work if the boot and master nodes are in separate VMs.
+
+Currently, the cluster model puts both master & boot & proxy functions on the same node. Separating the proxy from the master+boot node is possible. 
 
 Cookbook Notes
 ==============
@@ -21,6 +24,8 @@ Add run list to node
 
 `knife node run_list set icp-work1 'recipe[icp::default],recipe[icp::10_worker_node]'`
 
+Run chef-client
+---------------
 `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
 
 `knife ssh 'name:icp-work1' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
