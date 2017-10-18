@@ -33,19 +33,18 @@ ruby_block 'ssh_store_key' do
   block do
     ssh_public_key = ::File.open(::File.expand_path("~/.ssh/master.id_rsa.pub")).readline
     node.normal['ibm']['icp_master_pub_key'] = ssh_public_key
-    node.save
     Chef::Log.info("ssh_public_key:  #{ssh_public_key}")
     Chef::Log.info("node.ibm.icp_master_pub_key:  #{node['ibm']['icp_master_pub_key']}")
+
+    icp_node_type = "master_node"
+    node.normal['ibm']['icp_node_type'] = icp_node_type
+    Chef::Log.info("icp_node_type: #{'icp_node_type'}")
+    Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
+
+    node.save
   end
 end
 
-# Set attribute node_type as master
-ruby_block 'icp_node_type' do
-  block do
-    icp_node_type = "master_node"
-    node.normal['ibm']['icp_node_type'] = icp_node_type
-    node.save
-    Chef::Log.info("icp_node_type: #{'icp_node_type'}")
-    Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
-  end
+service 'sshd' do
+  action :restart
 end

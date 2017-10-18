@@ -65,12 +65,11 @@ ruby_block 'ssh_store_key' do
     node.normal['ibm']['icp_master_pub_key'] = master_pub_key
     icp_node_type = "worker_node"
     node.normal['ibm']['icp_node_type'] = icp_node_type
-    node.save
     Chef::Log.info("icp_node_type: #{'icp_node_type'}")
     Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
 
+    node.save
   end
-
 end
 
 service 'sshd' do
