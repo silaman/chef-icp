@@ -72,3 +72,7 @@ ruby_block 'ssh_store_key' do
   end
 
 end
+
+service 'sshd' do
+  action :restart
+end
