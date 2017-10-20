@@ -53,7 +53,7 @@ ruby_block 'ssh_store_key' do
       node.normal['ibm']['icp_cluster_name'] = "mycluster"
       Chef::Log.info("cp_cluster_name: #{'cp_cluster_name'}")
       node.save
-      notifies :restart, "service[sshd]", :delayed
+      # notifies :restart, 'service[sshd]', :delayed
     else
       raise "EXITING: Cannot determine master_pub_key"
     end
@@ -62,5 +62,5 @@ ruby_block 'ssh_store_key' do
 end
 
 service 'sshd' do
-  action :nothing
+  action :restart
 end

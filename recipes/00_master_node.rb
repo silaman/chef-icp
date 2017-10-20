@@ -44,11 +44,11 @@ ruby_block 'ssh_store_key' do
     node.normal['ibm']['icp_cluster_name'] = "mycluster"
 
     node.save
-    notifies :restart, "service[sshd]", :delayed
+    # notifies :restart, 'service[sshd]', :immediately
   end
-  not_if { !node['ibm']['icp_node_type'].to_s.empty? }
+  not_if { !node['ibm']['icp_node_type'].to_s == "master_node" }
 end
 
 service 'sshd' do
-  action :nothing
+  action :restart
 end
