@@ -20,6 +20,7 @@ bash 'set_tz_2_utc' do
   code <<-EOH
     timedatectl set-timezone UTC
   EOH
+  not_if "echo $(date +%Z) | grep UTC\n"
 end
 
 # Setup common /etc/hosts for all ICP nodes using the IP addresses which chef

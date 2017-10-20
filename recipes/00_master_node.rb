@@ -4,7 +4,7 @@
 # For master node only
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# This recipe is for the master+boot node. 
+# This recipe is for the master+boot node.
 
 # Set vm.max_map_count=262144 on master node
 node.default['sysctl']['params']['vm']['max_map_count'] = 262144
@@ -40,10 +40,15 @@ ruby_block 'ssh_store_key' do
     Chef::Log.info("icp_node_type: #{'icp_node_type'}")
     Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
 
+    # @todo get cluster name from "icp_cluster" data bag
+    node.normal['ibm']['icp_cluster_name'] = "mycluster"
+
     node.save
+    notifies :restart, "service[sshd]", :delayed
   end
+  not_if { !node['ibm']['icp_node_type'].to_s.empty? }
 end
 
 service 'sshd' do
-  action :restart
+  action :nothing
 end

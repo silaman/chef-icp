@@ -49,14 +49,18 @@ ruby_block 'ssh_store_key' do
       icp_node_type = "worker_node"
       node.normal['ibm']['icp_node_type'] = icp_node_type
       Chef::Log.info("icp_node_type: #{'icp_node_type'}")
-      Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
+      # @todo get cluster name from "icp_cluster" data bag
+      node.normal['ibm']['icp_cluster_name'] = "mycluster"
+      Chef::Log.info("cp_cluster_name: #{'cp_cluster_name'}")
       node.save
+      notifies :restart, "service[sshd]", :delayed
     else
       raise "EXITING: Cannot determine master_pub_key"
     end
   end
+  not_if { ::File.exist?(::File.expand_path("~/.ssh/authorized_keys")) }
 end
 
 service 'sshd' do
-  action :restart
+  action :nothing
 end
