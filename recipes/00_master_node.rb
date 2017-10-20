@@ -28,6 +28,7 @@ end
 bash 'ssh_keygen' do
   code <<-EOH
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
+    chown #{user}:#{user} ~/.ssh/master.id_rsa*
     cat ~/.ssh/master.id_rsa.pub | sudo tee -a /root/.ssh/authorized_keys
     EOH
   not_if { ::File.exist?(::File.expand_path("~/.ssh/master.id_rsa")) }
