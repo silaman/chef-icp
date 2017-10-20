@@ -13,7 +13,12 @@ include_recipe 'sysctl::apply'
 # Create ssh key in boot (usually master & boot are the same node) and append
 # the pub key to root's authorized_keys
 # Create .ssh folder for non-root & root accounts
+
+user = "#{ENV['HOME']}".to_s[6..-1]
+
 directory "#{ENV['HOME']}/.ssh" do
+  owner user
+  group user
   action :create
 end
 directory '/root/.ssh' do
