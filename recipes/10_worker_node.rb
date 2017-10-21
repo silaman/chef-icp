@@ -5,9 +5,14 @@
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
 # Create .ssh folder for non-root & root accounts
+# Extract SSH User who logged into the OS
+user_name = "#{ENV['HOME']}".to_s[6..-1]
 directory "#{ENV['HOME']}/.ssh" do
+  owner user_name
+  group user_name
   action :create
 end
+
 directory '/root/.ssh' do
   action :create
 end
@@ -59,6 +64,11 @@ ruby_block 'ssh_store_key' do
     end
   end
   not_if { ::File.exist?(::File.expand_path("~/.ssh/authorized_keys")) }
+end
+
+file "#{ENV['HOME']}/.ssh/authorized_keys" do
+  owner user_name
+  group user_name
 end
 
 service 'sshd' do

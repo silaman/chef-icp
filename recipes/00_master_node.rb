@@ -14,13 +14,14 @@ include_recipe 'sysctl::apply'
 # the pub key to root's authorized_keys
 # Create .ssh folder for non-root & root accounts
 
+# Extract SSH User who logged into the OS
 user = "#{ENV['HOME']}".to_s[6..-1]
-
 directory "#{ENV['HOME']}/.ssh" do
   owner user
   group user
   action :create
 end
+
 directory '/root/.ssh' do
   action :create
 end
