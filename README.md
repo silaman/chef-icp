@@ -1,11 +1,9 @@
 # icp
-
 This cookbook will not work if the boot and master nodes are in separate VMs.
 
 Currently, the cluster model puts both master & boot & proxy functions on the same node. Separating the proxy from the master+boot node is possible.
 
 ## Cookbook Notes
-
 Configured three VMs with hostname and static IP addresses. See template etc_hosts for details.
 
 ### Bootstrap nodes
@@ -24,3 +22,13 @@ Chef makes node's NAT as the default "ipaddress". The custom attribute "chef_ip"
 - `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
 - `knife ssh 'name:icp-work1' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
 - `knife ssh 'name:icp-work2' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
+
+## Watch Out
+These scenarios can cause a problem. It might be possible to develop a solution to eliminate the problem. Until then, watch out.
+
+- ***Correction. This does NOT seem to be a problem. Need to verify*** When a VM is restored to a snapshot before it became a chef node through a bootstrap, the corresponding node should be deleted. If the node is not deleted and we run the recipe 12_master_node, the ssh_known_hosts function will create a known_hosts entry with the node's client key, which is invalid as the corresponding VM does not exist. When we bootstrap the restored VM, chef will create a new node and client key, compounding the problem.
+
+ #1: Restore all VM to pre bootstrap. Do not delete nodes from Chef. Start mbp & work1 (work2 powered off). Node mpb: bootstrap, set run list, run chef client. `ssh_known_hosts` creates an entry for `work1` in `/etc/ssh/ssh_known_hosts` and states `action add up to date` for `work2` -- the message is a surprise, but in the correct direction.
+ #2: Node work1: bootstrap, set run list, run chef client. Log into mbt as labrat. `ssh -i ~/.ssh/master.id_rsa root@work1.icp.site` logs into `work1` as `root`. Surprised, but pleased at the result.
+ #3: Node work1: bootstrap, set run list, run chef client. Log into mbt as labrat. `ssh -i ~/.ssh/master.id_rsa root@work1.icp.site`. work2 is an unknown host.
+ #4: Node mbp: run chef client. Chef adds `/etc/ssh/ssh_known_hosts` entries for work1 & work2. `ssh -i ~/.ssh/master.id_rsa root@work1.icp.site` logs into `work1` as `root`. Surprised, but pleased at the result.
