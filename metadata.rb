@@ -4,10 +4,10 @@ maintainer_email 'you@example.com'
 license 'All Rights Reserved'
 description 'Installs/Configures icp'
 long_description 'Installs/Configures icp'
-version '0.5.90'
+version '0.6.00'
 chef_version '>= 12.1' if respond_to?(:chef_version)
 
-depends 'sysctl', '~> 0.10.1'
+depends 'sysctl', '>= 0.10.1'
 
 depends 'ssh'
 
