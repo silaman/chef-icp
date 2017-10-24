@@ -22,6 +22,26 @@ directory "#{ENV['HOME']}/.ssh" do
   action :create
 end
 
+# Setup docker repository
+include_recipe 'chef-apt-docker'
+
+# Install Docker version 17.06 (Oct 2017) required by ICP using cookbook:docker
+# LWRP:docker_installation_package
+# @todo make the docker version an input variable
+docker_service 'default' do
+  action [:create, :start]
+  version "17.06.2"
+  install_method 'package'
+  package_name 'docker-ce'
+end
+
+# Add SSH User who logged into the OS to group:docker
+group 'docker' do
+  action :modify
+  members user
+  append true
+end
+
 directory '/root/.ssh' do
   action :create
 end
