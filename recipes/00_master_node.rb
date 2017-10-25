@@ -79,3 +79,16 @@ end
 service 'sshd' do
   action :restart
 end
+
+# Add worker nodes to master's known_hosts
+# @todo Make this idempotent. May have to use the "icp_cluster" data bag
+search(:node, 'icp_node_type:worker_node',
+    :filter_result => {'hostname' => ['fqdn']} ).each do |worker|
+  worker_hostname = worker['hostname']
+  if !worker_hostname.to_s.empty?
+    ssh_known_hosts worker_hostname
+    Chef::Log.info("-- ICP worker hostname: #{worker_hostname}")
+  else
+    raise "EXITING: Cannot determine icp worker hostname"
+  end
+end
