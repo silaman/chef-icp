@@ -5,7 +5,7 @@
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
 # This recipe is for the master+boot node.
-# Install ICP-ce installer
+# Install ICPce installer and then run the ICPce installer
 
 if !node['ibm']['icp_node_type'] == "master_node"
   raise "EXITING: This recipe should be run only on ICP master node"
@@ -22,12 +22,14 @@ directory '/opt/ibm-cloud-private-ce' do
   action :create
 end
 
-bash 'extract icp cluster data' do
-  code <<-EOH
-    cd /opt/ibm-cloud-private-ce
-    sudo docker run -e LICENSE=accept \
-  -v "$(pwd)":/data ibmcom/icp-inception:#{icpce_ver} cp -r cluster /data
-    EOH
+docker_container 'icpce_extract_installer' do
+  repo 'ibmcom/icp-inception'
+  tag icpce_ver
+  working_dir '/opt/ibm-cloud-private-ce'
+  env 'LICENS=accept'
+  volumes '"$(pwd)":/data'
+  command 'cp -r cluster /data'
+  action :run
   not_if { ::File.exist?(::File.expand_path("/opt/ibm-cloud-private-ce/cluster/hosts")) }
 end
 
