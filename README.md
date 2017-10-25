@@ -32,3 +32,6 @@ These scenarios can cause a problem. It might be possible to develop a solution 
  #2: Node work1: bootstrap, set run list, run chef client. Log into mbt as labrat. `ssh -i ~/.ssh/master.id_rsa root@work1.icp.site` logs into `work1` as `root`. Surprised, but pleased at the result.
  #3: Node work1: bootstrap, set run list, run chef client. Log into mbt as labrat. `ssh -i ~/.ssh/master.id_rsa root@work1.icp.site`. work2 is an unknown host.
  #4: Node mbp: run chef client. Chef adds `/etc/ssh/ssh_known_hosts` entries for work1 & work2. `ssh -i ~/.ssh/master.id_rsa root@work1.icp.site` logs into `work1` as `root`. Surprised, but pleased at the result.
+
+## Notes
+- v0.6.31 -- Installs the ICPce installer in the master/boot node. Will work on the ICPce installation code next. The code needs polish. Could improve the idempotent score in some spots. Need to separate the boot node from the other nodes. Use parameters in templates for the ICP hosts and /etc/hosts files. Supply the ICPce version as a parameter. Rename the variable "user" to "login_user".
