@@ -14,7 +14,7 @@ Chef makes node's NAT as the default "ipaddress". The custom attribute "chef_ip"
 - `knife bootstrap 192.168.56.32 -x labrat -N icp-work2 --sudo --json-attributes '{ "chef_ip": "192.168.56.32" }' --use-sudo-password -P Obj#ct00`
 
 ### Add run list to node
-- `knife node run_list set icp-mbp 'recipe[icp::default],recipe[icp::00_master_node],recipe[icp::13_install_icpce]'`
+- `knife node run_list set icp-mbp 'recipe[icp::default],recipe[icp::00_master_node],recipe[icp::13_extract_icpce_installer]'`
 - `knife node run_list set icp-work1 'recipe[icp::default],recipe[icp::10_worker_node]'`
 - `knife node run_list set icp-work2 'recipe[icp::default],recipe[icp::10_worker_node]'`
 

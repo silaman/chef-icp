@@ -26,8 +26,8 @@ docker_container 'icpce_extract_installer' do
   repo 'ibmcom/icp-inception'
   tag icpce_ver
   working_dir '/opt/ibm-cloud-private-ce'
-  env 'LICENS=accept'
-  volumes '"$(pwd)":/data'
+  env 'LICENSE=accept'
+  volumes '/opt/ibm-cloud-private-ce:/data'
   command 'cp -r cluster /data'
   action :run
   not_if { ::File.exist?(::File.expand_path("/opt/ibm-cloud-private-ce/cluster/hosts")) }
