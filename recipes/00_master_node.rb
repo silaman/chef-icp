@@ -15,10 +15,10 @@ include_recipe 'sysctl::apply'
 # Create .ssh folder for non-root & root accounts
 
 # Extract SSH User who logged into the OS
-user = "#{ENV['HOME']}".to_s[6..-1]
+user_name = "#{ENV['HOME']}".to_s[6..-1]
 directory "#{ENV['HOME']}/.ssh" do
-  owner user
-  group user
+  owner user_name
+  group user_name
   action :create
 end
 
@@ -38,7 +38,7 @@ end
 # Add SSH User who logged into the OS to group:docker
 group 'docker' do
   action :modify
-  members user
+  members user_name
   append true
 end
 
@@ -49,35 +49,27 @@ end
 bash 'ssh_keygen' do
   code <<-EOH
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
-    chown #{user}:#{user} ~/.ssh/master.id_rsa*
+    ssh-keygen -y -f  ~/.ssh/master.id_rsa | sed 's/ssh-rsa //' > /tmp/master_pub_key
+    chown #{user_name}:#{user_name} ~/.ssh/master.id_rsa*
     cat ~/.ssh/master.id_rsa.pub | sudo tee -a /root/.ssh/authorized_keys
     EOH
   not_if { ::File.exist?(::File.expand_path("~/.ssh/master.id_rsa")) }
 end
 
-ruby_block 'ssh_store_key' do
+ruby_block 'get master_pub_key' do
   block do
-    ssh_public_key = ::File.open(::File.expand_path("~/.ssh/master.id_rsa.pub")).readline
-    node.normal['ibm']['icp_master_pub_key'] = ssh_public_key
-    Chef::Log.info("ssh_public_key:  #{ssh_public_key}")
-    Chef::Log.info("node.ibm.icp_master_pub_key:  #{node['ibm']['icp_master_pub_key']}")
-
+    master_pub_key = ::File.open(::File.expand_path("/tmp/master_pub_key")).readline
+    node.normal['ibm']['icp_master_pub_key'] = master_pub_key
     icp_node_type = "master_node"
     node.normal['ibm']['icp_node_type'] = icp_node_type
-    Chef::Log.info("icp_node_type: #{'icp_node_type'}")
-    Chef::Log.info("node.ibm.icp_node_type: #{node['ibm']['icp_node_type']}")
 
     # @todo get cluster name from "icp_cluster" data bag
     node.normal['ibm']['icp_cluster_name'] = "mycluster"
 
     node.save
-    # notifies :restart, 'service[sshd]', :immediately
+    #notifies :restart, 'service[ssh]', :delayed
   end
-  not_if { !node['ibm']['icp_node_type'].to_s == "master_node" }
-end
-
-service 'sshd' do
-  action :restart
+  not_if { node['ibm']['icp_master_pub_key'].length > 1 }
 end
 
 # Add worker nodes to master's known_hosts
@@ -87,8 +79,11 @@ search(:node, 'icp_node_type:worker_node',
   worker_hostname = worker['hostname']
   if !worker_hostname.to_s.empty?
     ssh_known_hosts worker_hostname
-    Chef::Log.info("-- ICP worker hostname: #{worker_hostname}")
   else
     raise "EXITING: Cannot determine icp worker hostname"
   end
+end
+
+service 'ssh' do
+  action :restart
 end
