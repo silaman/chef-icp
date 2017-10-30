@@ -46,6 +46,10 @@ directory '/root/.ssh' do
   action :create
 end
 
+# /tmp/master_pub_key contains just the core (secret) pub key, without the
+# leading "ssh-rsa " or the trailing comments. The LWRP ssh_authorized_keys (see
+# other recipes) requires the core pub key, and rejects the default format of
+# the pub key.
 bash 'ssh_keygen' do
   code <<-EOH
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
@@ -67,7 +71,7 @@ ruby_block 'get master_pub_key' do
     node.normal['ibm']['icp_cluster_name'] = "mycluster"
 
     node.save
-    #notifies :restart, 'service[ssh]', :delayed
+    #notifies :restart, 'service[sshd]', :delayed
   end
   not_if { node['ibm']['icp_master_pub_key'].length > 1 }
 end
@@ -84,6 +88,6 @@ search(:node, 'icp_node_type:worker_node',
   end
 end
 
-service 'ssh' do
+service 'sshd' do
   action :restart
 end

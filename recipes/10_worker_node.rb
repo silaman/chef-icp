@@ -41,7 +41,7 @@ search(:node, 'icp_node_type:master_node') do |n|
     # @todo get cluster name from "icp_cluster" data bag
     node.normal['ibm']['icp_cluster_name'] = "mycluster"
     node.save
-    #notifies :restart, 'service[ssh]', :delayed
+    #notifies :restart, 'service[sshd]', :delayed
   else
     raise "EXITING: Cannot determine master_pub_key"
   end
@@ -52,6 +52,6 @@ file "#{ENV['HOME']}/.ssh/authorized_keys" do
   group user_name
 end
 
-service 'ssh' do
+service 'sshd' do
   action :restart
 end
