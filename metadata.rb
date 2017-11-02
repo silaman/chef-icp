@@ -4,13 +4,14 @@ maintainer_email 'you@example.com'
 license 'All Rights Reserved'
 description 'Installs/Configures icp'
 long_description 'Installs/Configures icp'
-version '0.7.16'
+version '0.7.24'
 chef_version '>= 12.1' if respond_to?(:chef_version)
 
 depends 'sysctl', '>= 0.10.1'
 depends 'ssh'
 depends 'chef-apt-docker', '~> 2.0.4'
 depends 'docker', '~> 2.16.2'
+depends 'hostsfile', '~> 3.0.1'
 
 # The `issues_url` points to the location where issues for this cookbook are
 # tracked.  A `View Issues` link will be displayed on this cookbook's page when

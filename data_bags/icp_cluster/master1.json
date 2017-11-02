@@ -1,0 +1,9 @@
+{
+  "id": "master1",
+  "comment": "Master node",
+  "ip_address": "192.168.56.21",
+  "fqdn": "master1.icp.site",
+  "alias": "master1",
+  "icp_cluster_name": "mycluster",
+  "icp_node_type": "master"
+}

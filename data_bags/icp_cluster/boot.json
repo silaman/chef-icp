@@ -1,0 +1,10 @@
+{
+  "id": "boot",
+  "comment": "Boot node",
+  "ip_address": "192.168.56.20",
+  "fqdn": "boot.icp.site",
+  "alias": "boot",
+  "icp_cluster_name": "mycluster",
+  "icp_node_type": "boot",
+  "boot_is_master": "false"
+}

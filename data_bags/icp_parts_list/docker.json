@@ -1,0 +1,6 @@
+{
+  "id": "docker",
+  "comment": "Docker version for boot node",
+  "version": "17.06.2",
+  "package_name": "docker-ce"
+}

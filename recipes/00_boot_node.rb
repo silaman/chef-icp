@@ -1,17 +1,15 @@
 #
 # Cookbook:: icp
-# Recipe:: 00_master_node
-# For master node only
+# Recipe:: 00_boot_node
+# For boot node only
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# This recipe is for the master+boot node.
+# This recipe is for the boot node. A cluster has only one boot node and could
+# have several master nodes. Hence, the separation of recipes. You can combine
+# the master & boot nodes in the ICP installer cluster/hosts file by placing the
+# boot IP address in the [master] stanza.
 
-# Set vm.max_map_count=262144 on master node
-node.default['sysctl']['params']['vm']['max_map_count'] = 262144
-include_recipe 'sysctl::apply'
-
-# Create ssh key in boot (usually master & boot are the same node) and append
-# the pub key to root's authorized_keys
+# Create ssh key in boot and append the pub key to root's authorized_keys.
 # Create .ssh folder for non-root & root accounts
 
 # Extract SSH User who logged into the OS
@@ -46,10 +44,10 @@ directory '/root/.ssh' do
   action :create
 end
 
-# /tmp/master_pub_key contains just the core (secret) pub key, without the
-# leading "ssh-rsa " or the trailing comments. The LWRP ssh_authorized_keys (see
-# other recipes) requires the core pub key, and rejects the default format of
-# the pub key.
+# The second ssh-keygen command puts the core (secret) pub key, without the
+# leading "ssh-rsa " or the trailing comments, in /tmp/master_pub_key. Strange,
+# but the Chef Supermarket LWRP ssh_authorized_keys (see other recipes) rejects
+# the default format of the pub key.
 bash 'ssh_keygen' do
   code <<-EOH
     ssh-keygen -b 4096 -t rsa -f ~/.ssh/master.id_rsa -N ''
@@ -64,7 +62,7 @@ ruby_block 'get master_pub_key' do
   block do
     master_pub_key = ::File.open(::File.expand_path("/tmp/master_pub_key")).readline
     node.normal['ibm']['icp_master_pub_key'] = master_pub_key
-    icp_node_type = "master_node"
+    icp_node_type = "master"
     node.normal['ibm']['icp_node_type'] = icp_node_type
 
     # @todo get cluster name from "icp_cluster" data bag
@@ -76,13 +74,16 @@ ruby_block 'get master_pub_key' do
   not_if { node['ibm']['icp_master_pub_key'].length > 1 }
 end
 
-# Add worker nodes to master's known_hosts
-# @todo Make this idempotent. May have to use the "icp_cluster" data bag
-search(:node, 'icp_node_type:worker_node',
-    :filter_result => {'hostname' => ['fqdn']} ).each do |worker|
-  worker_hostname = worker['hostname']
-  if !worker_hostname.to_s.empty?
-    ssh_known_hosts worker_hostname
+# Add worker, master, proxy & management nodes to boot's known_hosts Logic will
+# add all cluster members including boot to known_hosts -- silly, but makes the
+# logic simpler. Should this be idempotent? Need to collect the current keys.
+# May not be worth the effort to make this idempotent.
+search(:node, 'icp_cluster_name:mycluster',
+    :filter_result => { 'nd_ip' => ['chef_ip']
+                      } ).each do |nd|
+  node_ip = nd['nd_ip']
+  if !nd_ip.to_s.empty?
+    ssh_known_hosts node_ip
   else
     raise "EXITING: Cannot determine icp worker hostname"
   end

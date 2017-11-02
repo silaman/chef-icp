@@ -4,19 +4,14 @@
 # For master node only
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# This recipe is for the master+boot node.
+# This recipe is for the boot node.
 # Install ICPce installer and then run the ICPce installer
 
-if !node['ibm']['icp_node_type'] == "master_node"
+if !node['ibm']['icp_node_type'] == "boot"
   raise "EXITING: This recipe should be run only on ICP master node"
 end
 
 icpce_ver = '2.1.0'
-# docker pull command is idempotent by nature. Will pull only if needed.
-docker_image 'ibmcom/icp-inception' do
-  tag icpce_ver
-  action :pull
-end
 
 directory '/opt/ibm-cloud-private-ce' do
   action :create

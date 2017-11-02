@@ -1,0 +1,9 @@
+{
+  "id": "proxy1",
+  "comment": "proxy node",
+  "ip_address": "192.168.56.23",
+  "fqdn": "proxy1.icp.site",
+  "alias": "proxy1",
+  "icp_cluster_name": "mycluster",
+  "icp_node_type": "proxy"
+}

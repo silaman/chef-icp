@@ -21,7 +21,7 @@ end
 # the current (worker or proxy) node's master_pub_key attribute, in
 # /root/.ssh/authorized_keys and current user's ~/.ssh/authorized_keys
 master_pub_key = ""
-search(:node, 'icp_node_type:master_node') do |n|
+search(:node, 'icp_node_type:boot') do |n|
   master_pub_key = n['ibm']['icp_master_pub_key']
 
   if !master_pub_key.to_s.empty?
@@ -36,9 +36,10 @@ search(:node, 'icp_node_type:master_node') do |n|
       type 'ssh-rsa'
     end
     node.normal['ibm']['icp_master_pub_key'] = master_pub_key
-    icp_node_type = "worker_node"
+    icp_node_type = "worker"
+    # @todo Set the node type at bootstrap and obtain attributes from the
+    # icp_cluster data bag
     node.normal['ibm']['icp_node_type'] = icp_node_type
-    # @todo get cluster name from "icp_cluster" data bag
     node.normal['ibm']['icp_cluster_name'] = "mycluster"
     node.save
     #notifies :restart, 'service[sshd]', :delayed

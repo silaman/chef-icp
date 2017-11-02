@@ -1,0 +1,7 @@
+{
+  "id": "icpce",
+  "comment": "IBM Cloud Private Community Edition",
+  "tag": "2.1.0",
+  "repo": "ibmcom/icp-inception",
+  "env": "LICENSE=accept",
+}
