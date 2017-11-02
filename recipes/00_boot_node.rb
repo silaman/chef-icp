@@ -9,6 +9,28 @@
 # the master & boot nodes in the ICP installer cluster/hosts file by placing the
 # boot IP address in the [master] stanza.
 
+# We need one boot node. icp_node_type is set by recipe[icp:default]
+if node['ibm']['icp_node_type'].to_s != "boot"
+  raise "EXITING: This is not the boot node"
+end
+
+# We should have only one boot node
+# @todo Should this be in a test recipe?
+boot_count = 0
+cluster_name = node['ibm']['icp_cluster_name']
+search(:node, "icp_cluster_name:#{cluster_name}",
+    :filter_result => { 'nd_node_type' => ['ibm']['icp_node_type']
+                      } ).each do |nd|
+  node_type = nd['nd_node_type']
+  if node_type.to_s == "boot"
+    boot_count += 1
+  end
+end
+
+if boot_count > 1
+  raise "EXITING: More than one boot node in icp_cluster"
+end
+
 # Create ssh key in boot and append the pub key to root's authorized_keys.
 # Create .ssh folder for non-root & root accounts
 
@@ -62,12 +84,6 @@ ruby_block 'get master_pub_key' do
   block do
     master_pub_key = ::File.open(::File.expand_path("/tmp/master_pub_key")).readline
     node.normal['ibm']['icp_master_pub_key'] = master_pub_key
-    icp_node_type = "master"
-    node.normal['ibm']['icp_node_type'] = icp_node_type
-
-    # @todo get cluster name from "icp_cluster" data bag
-    node.normal['ibm']['icp_cluster_name'] = "mycluster"
-
     node.save
     #notifies :restart, 'service[sshd]', :delayed
   end
@@ -76,16 +92,20 @@ end
 
 # Add worker, master, proxy & management nodes to boot's known_hosts Logic will
 # add all cluster members including boot to known_hosts -- silly, but makes the
-# logic simpler. Should this be idempotent? Need to collect the current keys.
-# May not be worth the effort to make this idempotent.
-search(:node, 'icp_cluster_name:mycluster',
-    :filter_result => { 'nd_ip' => ['chef_ip']
+# logic simpler. Need to collect current keys. May not be worth the effort to
+# make this idempotent. *** NOTE *** Logic uses hostname (fqdn) to collect
+# known_hosts. We need local DNS with /etc/hosts unless corporate DNS is
+# reliable. @todo Should we use IP addresses instead of hostnames?
+
+cluster_name = node['ibm']['icp_cluster_name']
+search(:node, "icp_cluster_name:#{cluster_name}",
+    :filter_result => { 'nd_fqdn' => ['fqdn']
                       } ).each do |nd|
-  node_ip = nd['nd_ip']
-  if !nd_ip.to_s.empty?
-    ssh_known_hosts node_ip
+  node_hostname = nd['nd_fqdn']
+  if !node_hostname.to_s.empty?
+    ssh_known_hosts node_hostname
   else
-    raise "EXITING: Cannot determine icp worker hostname"
+    raise "EXITING: Cannot determine icp node hostname"
   end
 end
 

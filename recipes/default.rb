@@ -25,14 +25,25 @@ bash 'set_tz_2_utc' do
 end
 
 # Use Supermarket cookbook hostsfile to put icp_cluster can append entries to
-# /etc/hosts, one entry per invocation. However, I am not sure there is a need
-# for local DNS resolution in each node. Is corporate DNS adequate?
+# /etc/hosts, one entry per invocation. Do we really need local DNS resolution
+# in each node. Is corporate DNS adequate?
 
 data_bag('icp_cluster').each do |icp_node|
   nd = data_bag_item('icp_cluster', icp_node)
+  # Add entries for all nodes into /etc/hosts
   hostsfile_entry "#{nd['ip_address']}" do
     hostname  nd['fqdn']
     aliases   [nd['alias']]
     action    :create
   end
+end
+
+# Get node properties using ['ibm']['icp_node_id'], which is set by bootstrap
+# Set ICP attributes for boot node
+if node['ibm']['icp_node_type'].length <= 1
+  icp_node = node['ibm']['icp_node_id']
+  nd = data_bag_item('icp_cluster', icp_node )
+  node.normal['ibm']['icp_node_type'] = nd['icp_node_type']
+  node.normal['ibm']['icp_cluster_name'] = nd['icp_cluster_name']
+  node.save
 end

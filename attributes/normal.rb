@@ -1,3 +1,5 @@
-normal['ibm']['icp_master_pub_key']
+normal['ibm']['icp_node_id']
+normal['ibm']['icp_node_ip']
 normal['ibm']['icp_node_type']
+normal['ibm']['icp_master_pub_key']
 normal['ibm']['icp_cluster_name']

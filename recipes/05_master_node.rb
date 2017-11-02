@@ -6,6 +6,22 @@
 
 # This recipe is for the master node.
 
-# Set vm.max_map_count=262144 on master node
-node.default['sysctl']['params']['vm']['max_map_count'] = 262144
-include_recipe 'sysctl::apply'
+# Are boot & master on the same node?
+nd = data_bag_item('icp_cluster', "boot")
+if nd['boot_is_master'] == "true"
+  if node['ibm']['icp_node_type'] == "boot"
+    # Set vm.max_map_count=262144 on master node
+    node.default['sysctl']['params']['vm']['max_map_count'] = 262144
+    include_recipe 'sysctl::apply'
+  else
+    raise "EXITING: This is NOT the boot node. Cluster combines boot & master"
+  end
+else
+  # Master node, not a combined boot+master
+  # Set vm.max_map_count=262144 on master node
+  node.default['sysctl']['params']['vm']['max_map_count'] = 262144
+  include_recipe 'sysctl::apply'
+
+end
+
+## >>> need to pass the node_id ("id" in icp_cluster) in bootstratp
