@@ -4,10 +4,11 @@
 # For boot node only
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# This recipe is for the boot node. A cluster has only one boot node and could
+# This recipe is for the boot node. A cluster has only one boot node but could
 # have several master nodes. Hence, the separation of recipes. You can combine
 # the master & boot nodes in the ICP installer cluster/hosts file by placing the
-# boot IP address in the [master] stanza.
+# boot IP address in the [master] stanza AND set boot_is_master to true in
+# icp_cluster boot.json  *** NOTE *** boot becomes master, not vice versa.
 
 # We need one boot node. icp_node_type is set by recipe[icp:default]
 if node['ibm']['icp_node_type'].to_s != "boot"

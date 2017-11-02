@@ -14,14 +14,15 @@ if nd['boot_is_master'] == "true"
     node.default['sysctl']['params']['vm']['max_map_count'] = 262144
     include_recipe 'sysctl::apply'
   else
-    raise "EXITING: This is NOT the boot node. Cluster combines boot & master"
+    raise "EXITING: Review & correct boot_is_master attribute in icp_cluster data bag"
   end
 else
-  # Master node, not a combined boot+master
-  # Set vm.max_map_count=262144 on master node
-  node.default['sysctl']['params']['vm']['max_map_count'] = 262144
-  include_recipe 'sysctl::apply'
-
+  if node['ibm']['icp_node_type'] == "master"
+    # Master node, not a combined boot+master
+    # Set vm.max_map_count=262144 on master node
+    node.default['sysctl']['params']['vm']['max_map_count'] = 262144
+    include_recipe 'sysctl::apply'
+  else
+    raise "EXITING: This is not a master node"
+  end
 end
-
-## >>> need to pass the node_id ("id" in icp_cluster) in bootstratp
