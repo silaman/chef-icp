@@ -4,63 +4,38 @@
 # For boot node only
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# This recipe is for the boot node. A cluster has only one boot node but could
-# have several master nodes. Hence, the separation of recipes. You can combine
-# the master & boot nodes in the ICP installer cluster/hosts file by placing the
-# boot IP address in the [master] stanza AND set boot_is_master to true in
-# icp_cluster boot.json  *** NOTE *** boot becomes master, not vice versa.
+# boot node recipe. A cluster has only one boot node but could have several
+# master nodes. Hence, the separation of recipes. You can combine the master &
+# boot nodes in the ICP installer cluster/hosts file by placing the boot IP
+# address in the [master] stanza AND set boot_is_master to true in icp_cluster
+# boot.json  *** NOTE *** boot becomes master, not vice versa.
 
-# We need one boot node. icp_node_type is set by recipe[icp:default]
-if node['ibm']['icp_node_type'].to_s != "boot"
-  raise "EXITING: This is not the boot node"
-end
+return if node['ibm']['icp_node_type'] != "boot"
 
-# We should have only one boot node
+# We should have one and only one boot node
 # @todo Should this be in a test recipe?
 boot_count = 0
 cluster_name = node['ibm']['icp_cluster_name']
 search(:node, "icp_cluster_name:#{cluster_name}",
-    :filter_result => { 'nd_node_type' => ['ibm']['icp_node_type']
+    :filter_result => { 'nd_node_type' => ['icp_node_type']
                       } ).each do |nd|
   node_type = nd['nd_node_type']
   if node_type.to_s == "boot"
     boot_count += 1
   end
 end
-
 if boot_count > 1
   raise "EXITING: More than one boot node in icp_cluster"
 end
 
 # Create ssh key in boot and append the pub key to root's authorized_keys.
 # Create .ssh folder for non-root & root accounts
-
 # Extract SSH User who logged into the OS
 user_name = "#{ENV['HOME']}".to_s[6..-1]
 directory "#{ENV['HOME']}/.ssh" do
   owner user_name
   group user_name
   action :create
-end
-
-# Setup docker repository
-include_recipe 'chef-apt-docker'
-
-# Install Docker version 17.06 (Oct 2017) required by ICP using cookbook:docker
-# LWRP:docker_installation_package
-# @todo make the docker version an input variable
-docker_service 'default' do
-  action [:create, :start]
-  version "17.06.2"
-  install_method 'package'
-  package_name 'docker-ce'
-end
-
-# Add SSH User who logged into the OS to group:docker
-group 'docker' do
-  action :modify
-  members user_name
-  append true
 end
 
 directory '/root/.ssh' do

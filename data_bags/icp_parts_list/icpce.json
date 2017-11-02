@@ -4,4 +4,6 @@
   "tag": "2.1.0",
   "repo": "ibmcom/icp-inception",
   "env": "LICENSE=accept",
+  "working_dir": "/opt/ibm-cloud-private-ce",
+  "command": "cp -r cluster /data"
 }

@@ -24,10 +24,9 @@ bash 'set_tz_2_utc' do
   not_if "echo $(date +%Z) | grep UTC\n"
 end
 
-# Use Supermarket cookbook hostsfile to put icp_cluster can append entries to
-# /etc/hosts, one entry per invocation. Do we really need local DNS resolution
-# in each node. Is corporate DNS adequate?
-
+# Supermarket cookbook hostsfile adds entries to /etc/hosts for nodes defined in
+# the icp_cluster data bag. Do we really need local DNS resolution in each node.
+# Is corporate DNS adequate?
 data_bag('icp_cluster').each do |icp_node|
   nd = data_bag_item('icp_cluster', icp_node)
   # Add entries for all nodes into /etc/hosts

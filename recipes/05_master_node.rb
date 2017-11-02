@@ -6,6 +6,8 @@
 
 # This recipe is for the master node.
 
+return if node['ibm']['icp_node_type'] != "master" || node['ibm']['icp_node_type'] != "boot"
+
 # Are boot & master on the same node?
 nd = data_bag_item('icp_cluster', "boot")
 if nd['boot_is_master'] == "true"

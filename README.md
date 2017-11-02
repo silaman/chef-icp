@@ -40,15 +40,15 @@ These files are in the chef `templates` folder. You must setup `/etc/hosts` even
 Chef makes node's NAT as the default "ipaddress". The custom attribute "chef_ip" stores the HostOnly IP for use by chef commands. Need to specify -P password in the command line for the option "--use-sudo-password".
 - Master node
 
-  `knife bootstrap 192.168.56.30 -x labrat -N icp-mbp --sudo --json-attributes '{ "chef_ip": "192.168.56.30" }' --use-sudo-password -P Obj#ct00`
+  `knife bootstrap 192.168.56.30 -x <userid> -N icp-mbp --sudo --json-attributes '{ "chef_ip": "192.168.56.30" }' --use-sudo-password -P <pswd>`
 
 - Worker node 1
 
-  `knife bootstrap 192.168.56.31 -x labrat -N icp-work1 --sudo --json-attributes '{ "chef_ip": "192.168.56.31" }' --use-sudo-password -P Obj#ct00`
+  `knife bootstrap 192.168.56.31 -x <userid> -N icp-work1 --sudo --json-attributes '{ "chef_ip": "192.168.56.31" }' --use-sudo-password -P <pswd>`
 
 - Worker node 2
 
-  `knife bootstrap 192.168.56.32 -x labrat -N icp-work2 --sudo --json-attributes '{ "chef_ip": "192.168.56.32" }' --use-sudo-password -P Obj#ct00`
+  `knife bootstrap 192.168.56.32 -x <userid> -N icp-work2 --sudo --json-attributes '{ "chef_ip": "192.168.56.32" }' --use-sudo-password -P <pswd>`
 
 ### Add run list to node
 Chef can combine bootstrap with run-list and execute the recipes. Worked okay for node `mbp`, but threw error with `work1`. Inexplicable, as the discreet knife chef-client invocation worked smoothly with no changes to the cookbook. So, let's run bootstrap, run-list and chef-client separately.
@@ -67,19 +67,19 @@ Chef can combine bootstrap with run-list and execute the recipes. Worked okay fo
 ### Run chef-client
 - Master node
 
-  `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
+  `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user <userid> --ssh-password '<pswd>' --attribute chef_ip`
 
 - Worker node 1 (put boot node's master.id_rsa.pub key into authorized_keys)
 
-  `knife ssh 'name:icp-work1' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
+  `knife ssh 'name:icp-work1' 'sudo chef-client' --ssh-user <userid> --ssh-password '<pswd>' --attribute chef_ip`
 
 - Worker node 2
 
-  `knife ssh 'name:icp-work2' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
+  `knife ssh 'name:icp-work2' 'sudo chef-client' --ssh-user <userid> --ssh-password '<pswd>' --attribute chef_ip`
 
 - Master node (yes, again, to pull in the latest `known_hosts` keys from ICP nodes)
 
-  `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user labrat --ssh-password 'Obj#ct00' --attribute chef_ip`
+  `knife ssh 'name:icp-mbp' 'sudo chef-client' --ssh-user <userid> --ssh-password '<pswd>' --attribute chef_ip`
 
 ### Run ICPce Installation
 The final installation step is currently manual. It should be run after all ICPce nodes have been prepared by chef. I plan to integrate this step into chef soon. Log into the boot node and run the two commands below. The installation takes between 20 to 35 minutes. The ICP console might take another 15 minutes to start, depending the master node's resources.
