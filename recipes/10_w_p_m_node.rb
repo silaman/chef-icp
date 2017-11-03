@@ -4,18 +4,11 @@
 #  ICP Workder Nodes
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-# Create .ssh folder for non-root & root accounts
+# Recipe for worker, proxy and management nodes.
+return if !node['ibm']['icp_node_type'] == "worker" || !node['ibm']['icp_node_type'] == "proxy" || !node['ibm']['icp_node_type'] == "management" || !node['ibm']['icp_node_type'] == "master"
+
 # Extract SSH User who logged into the OS
 user_name = "#{ENV['HOME']}".to_s[6..-1]
-directory "#{ENV['HOME']}/.ssh" do
-  owner user_name
-  group user_name
-  action :create
-end
-
-directory '/root/.ssh' do
-  action :create
-end
 
 # Get the ICP cluster's master_pub_key from the master_node. Place it in
 # the current (worker or proxy) node's master_pub_key attribute, in
@@ -36,11 +29,6 @@ search(:node, 'icp_node_type:boot') do |n|
       type 'ssh-rsa'
     end
     node.normal['ibm']['icp_master_pub_key'] = master_pub_key
-    icp_node_type = "worker"
-    # @todo Set the node type at bootstrap and obtain attributes from the
-    # icp_cluster data bag
-    node.normal['ibm']['icp_node_type'] = icp_node_type
-    node.normal['ibm']['icp_cluster_name'] = "mycluster"
     node.save
     #notifies :restart, 'service[sshd]', :delayed
   else

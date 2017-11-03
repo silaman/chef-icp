@@ -24,6 +24,20 @@ bash 'set_tz_2_utc' do
   not_if "echo $(date +%Z) | grep UTC\n"
 end
 
+# Extract SSH User who logged into the OS
+user_name = "#{ENV['HOME']}".to_s[6..-1]
+# Create .ssh folder for non-root & root accounts
+directory "#{ENV['HOME']}/.ssh" do
+  owner user_name
+  group user_name
+  action :create
+end
+
+# Yes. we need an empty line here
+directory '/root/.ssh' do
+  action :create
+end
+
 # Supermarket cookbook hostsfile adds entries to /etc/hosts for nodes defined in
 # the icp_cluster data bag. Do we really need local DNS resolution in each node.
 # Is corporate DNS adequate?
@@ -34,6 +48,10 @@ data_bag('icp_cluster').each do |icp_node|
     hostname  nd['fqdn']
     aliases   [nd['alias']]
     action    :create
+  end
+  # Remove entry 127.0.1.1 from /etc/hosts
+  hostsfile_entry "127.0.1.1" do
+    action    :remove
   end
 end
 

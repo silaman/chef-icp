@@ -28,20 +28,10 @@ if boot_count > 1
   raise "EXITING: More than one boot node in icp_cluster"
 end
 
-# Create ssh key in boot and append the pub key to root's authorized_keys.
-# Create .ssh folder for non-root & root accounts
 # Extract SSH User who logged into the OS
 user_name = "#{ENV['HOME']}".to_s[6..-1]
-directory "#{ENV['HOME']}/.ssh" do
-  owner user_name
-  group user_name
-  action :create
-end
 
-directory '/root/.ssh' do
-  action :create
-end
-
+# Create ssh key in boot and append the pub key to root's authorized_keys.
 # The second ssh-keygen command puts the core (secret) pub key, without the
 # leading "ssh-rsa " or the trailing comments, in /tmp/master_pub_key. Strange,
 # but the Chef Supermarket LWRP ssh_authorized_keys (see other recipes) rejects
