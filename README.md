@@ -21,7 +21,7 @@ Please post issues in github. Let me know if you have time to contribute ideas a
 ## Environment
 Create Ubuntu 16.04 server VMs (no need for GUI) with static IP addresses and access to the public internet. Assuming you use VirtualBox, you have two choices for networking:
 - Bridged: A single network interface for each VM. VirtualBox Bridged interfaces should be able to access the internet.
-- NAT + HostOnly: Each VM should have two network interfaces: #1 NAT and #2 host-only. Put the host-only IP addresses in both files in templates folder and corresponding `icp_cluster` item.
+- NAT + HostOnly: Each VM should have two network interfaces: #1 NAT and #2 host-only. Put the host-only IP addresses in `templates/icpce_cluster_hosts.erb` and the corresponding `icp_cluster` item.
 
 The cluster requires a fair amount of computer resources. My lab machine: Intel i7 CPU (circa 2013) with 32 GB
 - boot node:      2CPU 6GB    4CPU 12GB if `boot_is_master`
