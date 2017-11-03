@@ -2,7 +2,7 @@
 # Cookbook:: icp
 # Recipe:: 00_boot_node
 # For boot node only
-# Copyright:: 2017, The Authors, All Rights Reserved.
+# Copyright:: 2017, IBM, All Rights Reserved.
 
 # boot node recipe. A cluster has only one boot node but could have several
 # master nodes. Hence, the separation of recipes. You can combine the master &
@@ -24,6 +24,7 @@ search(:node, "icp_cluster_name:#{cluster_name}",
     boot_count += 1
   end
 end
+
 if boot_count > 1
   raise "EXITING: More than one boot node in icp_cluster"
 end

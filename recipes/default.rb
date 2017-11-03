@@ -2,7 +2,7 @@
 # Cookbook:: icp
 # Recipe:: default
 #
-# Copyright:: 2017, The Authors, All Rights Reserved.
+# Copyright:: 2017, IBM, All Rights Reserved.
 #
 
 apt_update 'Update the apt cache daily' do
@@ -33,7 +33,6 @@ directory "#{ENV['HOME']}/.ssh" do
   action :create
 end
 
-# Yes. we need an empty line here
 directory '/root/.ssh' do
   action :create
 end

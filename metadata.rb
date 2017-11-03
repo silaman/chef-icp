@@ -1,10 +1,10 @@
 name 'icp'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
+maintainer 'IBM'
+maintainer_email 'ravi.ramnarayan@us.ibm.com'
 license 'All Rights Reserved'
 description 'Installs/Configures icp'
 long_description 'Installs/Configures icp'
-version '0.7.37'
+version '0.7.38'
 chef_version '>= 12.1' if respond_to?(:chef_version)
 
 depends 'sysctl', '>= 0.10.1'

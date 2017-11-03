@@ -2,7 +2,7 @@
 # Cookbook:: icp
 # Recipe:: 13_master_node
 # For master node only
-# Copyright:: 2017, The Authors, All Rights Reserved.
+# Copyright:: 2017, IBM, All Rights Reserved.
 
 # This recipe is for the boot node.
 # Install Docker, ICPce installer and extract the ICPce installer
@@ -46,15 +46,15 @@ end
 directory '/opt/ibm-cloud-private-ce' do
   action :create
 end
-# *** Do NOT change the sequence of parameters ***
+
 docker_container 'icpce_extract_installer' do
-  working_dir '/opt/ibm-cloud-private-ce'
-  volumes     '/opt/ibm-cloud-private-ce:/data'
+  action      :run
   repo        icp['repo']
   tag         icp['tag']
   env         icp['env']
   command     icp['command']
-  action      :run
+  working_dir '/opt/ibm-cloud-private-ce'
+  volumes     '/opt/ibm-cloud-private-ce:/data'
   not_if { ::File.exist?(::File.expand_path("/opt/ibm-cloud-private-ce/cluster/hosts")) }
 end
 

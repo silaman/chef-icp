@@ -2,7 +2,7 @@
 # Cookbook:: icp
 # Recipe:: 05_master_node
 # For master node only
-# Copyright:: 2017, The Authors, All Rights Reserved.
+# Copyright:: 2017, IBM, All Rights Reserved.
 
 # This recipe is for the master node.
 

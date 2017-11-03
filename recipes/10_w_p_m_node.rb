@@ -2,9 +2,9 @@
 # Cookbook:: icp
 # Recipe:: os_parms
 #  ICP Workder Nodes
-# Copyright:: 2017, The Authors, All Rights Reserved.
+# Copyright:: 2017, IBM, All Rights Reserved.
 
-# Recipe for worker, proxy and management nodes.
+# Recipe for worker, proxy, management and master nodes.
 return if !node['ibm']['icp_node_type'] == "worker" || !node['ibm']['icp_node_type'] == "proxy" || !node['ibm']['icp_node_type'] == "management" || !node['ibm']['icp_node_type'] == "master"
 
 # Extract SSH User who logged into the OS
