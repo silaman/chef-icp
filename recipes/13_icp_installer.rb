@@ -58,8 +58,7 @@ docker_container 'icp_extract_installer' do
   not_if { ::File.exist?(::File.expand_path("/opt/ibm-cloud-private/cluster/hosts")) }
 end
 
-# Replace icp-ce cluster/hosts file with fixed values in the template. Need to
-# make the template flexible -- later.
+# Use icp_cluster items to compose cluster/hosts template
 master_nodes = ["[master]"]
 worker_nodes = ["[worker]"]
 proxy_nodes = ["[proxy]"]
@@ -79,11 +78,15 @@ data_bag('icp_cluster').each do |icp_node|
   end
 end
 
-master_nodes = master_nodes + worker_nodes + proxy_nodes + mgmt_nodes
-
+# @todo If there are no nodes for a node type, is an empty node_type stanza
+# okay?
 template '/opt/ibm-cloud-private/cluster/hosts' do
   source 'icp_cluster_hosts.erb'
-  variables( :cluster_hosts => master_nodes )
+  variables({ :master_hosts => master_nodes,
+              :worker_hosts => worker_nodes,
+              :proxy_hosts => proxy_nodes,
+              :mgmt_hosts => mgmt_nodes
+  })
 end
 
 # Copy master.id_rsa to ICPce installer

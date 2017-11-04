@@ -1,3 +1,15 @@
-<% @cluster_hosts.each do |host| %>
+<% @master_hosts.each do |host| %>
+<%= "#{host}" %>
+<% end %>
+
+<% @worker_hosts.each do |host| %>
+<%= "#{host}" %>
+<% end %>
+
+<% @proxy_hosts.each do |host| %>
+<%= "#{host}" %>
+<% end %>
+
+<% @mgmt_hosts.each do |host| %>
 <%= "#{host}" %>
 <% end %>
