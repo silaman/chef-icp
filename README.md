@@ -48,7 +48,7 @@ If you use VirtualBox NAT+HostOnly network interfaces, Chef will make the node's
 
   `knife node run_list set icp-boot 'recipe[icp::default],recipe[icp::00_boot_node],recipe[icp::05_master_node],recipe[icp::10_w_p_m_node],recipe[icp::13_icp_installer]'`
 
-- Process recipes on each node. And once again on the boot node to pick up the current known_hosts keys for the cluster.
+- Process recipes on each node. Wait until boot recipes complete. You can run recipes for the other nodes in parallel. Run the boot node recipes again to pick up the current known_hosts keys for the cluster.
 
   `knife ssh 'name:icp-boot' 'sudo chef-client' --ssh-user <userid> --ssh-password '<pswd>' --attribute ibm.icp_node_ip`
 

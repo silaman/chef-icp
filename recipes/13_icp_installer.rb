@@ -47,7 +47,7 @@ directory '/opt/ibm-cloud-private-ce' do
   action :create
 end
 
-docker_container 'icpce_extract_installer' do
+docker_container 'icp_extract_installer' do
   action      :run
   repo        icp['repo']
   tag         icp['tag']
