@@ -1,9 +1,10 @@
 {
-  "id": "icpce",
+  "id": "icp",
   "comment": "IBM Cloud Private Community Edition",
+  "icp_edition": "ce",
   "tag": "2.1.0",
   "repo": "ibmcom/icp-inception",
   "env": "LICENSE=accept",
-  "working_dir": "/opt/ibm-cloud-private-ce",
+  "working_dir": "/opt/ibm-cloud-private",
   "command": "cp -r cluster /data"
 }

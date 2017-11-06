@@ -14,8 +14,9 @@ user_name = "#{ENV['HOME']}".to_s[6..-1]
 # the current (worker or proxy) node's master_pub_key attribute, in
 # /root/.ssh/authorized_keys and current user's ~/.ssh/authorized_keys
 master_pub_key = ""
+
 search(:node, 'icp_node_type:boot') do |n|
-  master_pub_key = n['ibm']['icp_master_pub_key']
+  master_pub_key = n['ibm']['icp_master_pub_key'].to_s
 
   if !master_pub_key.to_s.empty?
     ssh_authorized_keys 'non-root user' do

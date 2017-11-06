@@ -4,6 +4,6 @@
   "ip_address": "192.168.56.22",
   "fqdn": "worker1.icp.site",
   "alias": "worker1",
-  "icp_cluster_name": "mycluster",
+  "icp_cluster_name": "cluster-a",
   "icp_node_type": "worker"
 }

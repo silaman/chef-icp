@@ -4,6 +4,6 @@
   "ip_address": "192.168.56.24",
   "fqdn": "mgmt.icp.site",
   "alias": "mgmt",
-  "icp_cluster_name": "mycluster",
+  "icp_cluster_name": "cluster-a",
   "icp_node_type": "management"
 }

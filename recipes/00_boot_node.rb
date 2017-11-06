@@ -18,7 +18,7 @@ boot_count = 0
 cluster_name = node['ibm']['icp_cluster_name']
 search(:node, "icp_cluster_name:#{cluster_name}",
     :filter_result => { 'nd_node_type' => ['icp_node_type']
-                      } ).each do |nd|
+  } ).each do |nd|
   node_type = nd['nd_node_type']
   if node_type.to_s == "boot"
     boot_count += 1
@@ -67,7 +67,7 @@ end
 cluster_name = node['ibm']['icp_cluster_name']
 search(:node, "icp_cluster_name:#{cluster_name}",
     :filter_result => { 'nd_fqdn' => ['fqdn']
-                      } ).each do |nd|
+  } ).each do |nd|
   node_hostname = nd['nd_fqdn']
   if !node_hostname.to_s.empty?
     ssh_known_hosts node_hostname

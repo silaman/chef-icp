@@ -37,21 +37,34 @@ directory '/root/.ssh' do
   action :create
 end
 
+cluster_name = ""
+# Get the cluster name from the data_bag_item with node_type = "boot"
+data_bag('icp_cluster').each do |icp_node|
+  nd = data_bag_item('icp_cluster', icp_node)
+  if nd['icp_node_type'] == "boot"
+    cluster_name = nd['icp_cluster_name']
+  end
+end
+
 # Supermarket cookbook hostsfile adds entries to /etc/hosts for nodes defined in
 # the icp_cluster data bag. Do we really need local DNS resolution in each node.
 # Is corporate DNS adequate?
 data_bag('icp_cluster').each do |icp_node|
   nd = data_bag_item('icp_cluster', icp_node)
-  # Add entries for all nodes into /etc/hosts
-  hostsfile_entry "#{nd['ip_address']}" do
-    hostname  nd['fqdn']
-    aliases   [nd['alias']]
-    action    :create
+  # Select nodes in the same cluster as boot
+  if nd['icp_cluster_name'] == cluster_name
+    # Add entries for all nodes into /etc/hosts
+    hostsfile_entry "#{nd['ip_address']}" do
+      hostname  nd['fqdn']
+      aliases   [nd['alias']]
+      action    :create
+    end
   end
-  # Remove entry 127.0.1.1 from /etc/hosts
-  hostsfile_entry "127.0.1.1" do
-    action    :remove
-  end
+end
+
+# Remove entry 127.0.1.1 from /etc/hosts
+hostsfile_entry "127.0.1.1" do
+  action    :remove
 end
 
 # Get node properties using ['ibm']['icp_node_id'], which is set by bootstrap
